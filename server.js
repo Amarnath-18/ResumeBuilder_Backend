@@ -16,7 +16,7 @@ app.use(cookieParser());
 const allowedOrigins = [
   "http://localhost:5173", // Local development
   "http://localhost:3000", // Alternative local port
-  process.env.CLIENT_URL,   // Production frontend URL from env
+  "https://resume-builder-frontend-git-main-amarnaths-projects-7f27c4db.vercel.app/",   // Production frontend URL from env
   // Add your actual production frontend URL here if different
 ];
 
