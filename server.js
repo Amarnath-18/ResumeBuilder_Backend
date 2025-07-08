@@ -11,11 +11,34 @@ const app = express();
 
 app.use(express.json());
 app.use(cookieParser());
+
+// Enhanced CORS configuration for production
+const allowedOrigins = [
+  "http://localhost:5173", // Local development
+  "http://localhost:3000", // Alternative local port
+  process.env.CLIENT_URL,   // Production frontend URL from env
+  // Add your actual production frontend URL here if different
+];
+
 app.use(cors({
-  origin: process.env.CLIENT_URL || "http://localhost:3000",
-  credentials: true
+  origin: function (origin, callback) {
+    // Allow requests with no origin (like mobile apps or curl requests)
+    if (!origin) return callback(null, true);
+    
+    if (allowedOrigins.indexOf(origin) !== -1 || !origin) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'Cookie'],
+  exposedHeaders: ['set-cookie']
 }));
 
+// Handle preflight requests
+app.options('*', cors());
 
 app.get("/api", (req, res) => {
   res.json({ message: "Resume Builder API is running!" });

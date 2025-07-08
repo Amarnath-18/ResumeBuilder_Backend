@@ -87,11 +87,15 @@ export const login = async (req, res) => {
 
     console.log('Setting cookie with token:', token ? 'Token generated' : 'No token');
 
+    // Enhanced cookie configuration for production
+    const isProduction = process.env.NODE_ENV === 'production';
+    
     res.cookie("token", token, {
       maxAge: 3 * 24 * 60 * 60 * 1000, // 3 days
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production', // Use secure cookies in production
-      sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax' // Allow cross-origin cookies
+      secure: isProduction, // Use secure cookies in production (HTTPS required)
+      sameSite: isProduction ? 'none' : 'lax', // 'none' for cross-origin in production
+      domain: isProduction ? undefined : undefined, // Let browser set domain automatically
     });
 
     const { password: _, ...userData } = user._doc;
@@ -113,7 +117,14 @@ export const login = async (req, res) => {
 
 export const logout = async (req, res) => {
     try {
-        res.clearCookie("token");
+        const isProduction = process.env.NODE_ENV === 'production';
+        
+        res.clearCookie("token", {
+            httpOnly: true,
+            secure: isProduction,
+            sameSite: isProduction ? 'none' : 'lax',
+        });
+        
         return res.status(200).json({
             success: true,
             message: "User logged out successfully.",
