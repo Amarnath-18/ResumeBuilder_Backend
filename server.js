@@ -5,50 +5,47 @@ import cookieParser from "cookie-parser";
 import connectDB from "./src/config/db.js";
 import authRouter from './src/routes/authRoutes.js'
 import resumeRouter from './src/routes/resumeRoutes.js'
+
 dotenv.config();
 
 const app = express();
 
+// Connect to Database first
+connectDB();
+
+// Middleware
 app.use(express.json());
 app.use(cookieParser());
 
-// Enhanced CORS configuration for production
+// CORS Setup
 const allowedOrigins = [
-  "http://localhost:5173", // Local development
-  "http://localhost:3000", // Alternative local port
-  "https://resume-builder-frontend-git-main-amarnaths-projects-7f27c4db.vercel.app", // Production frontend URL (no trailing slash)
-  process.env.CLIENT_URL, // Production frontend URL from env
+  "http://localhost:5173",
+  "http://localhost:3000",
+  "https://resume-builder-frontend-git-main-amarnaths-projects-7f27c4db.vercel.app", // Vercel preview
+  process.env.CLIENT_URL
 ];
 
 app.use(cors({
   origin: function (origin, callback) {
-    // Allow requests with no origin (like mobile apps or curl requests)
-    if (!origin) return callback(null, true);
-    
-    if (allowedOrigins.indexOf(origin) !== -1 || !origin) {
+    if (!origin || allowedOrigins.includes(origin)) {
       callback(null, true);
     } else {
-      callback(new Error('Not allowed by CORS'));
+      callback(new Error("Not allowed by CORS: " + origin));
     }
   },
   credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'Cookie'],
-  exposedHeaders: ['set-cookie']
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization" , "Access-Control-Allow-Origin"],
+  exposedHeaders: ["set-cookie"]
 }));
 
-// Handle preflight requests
-app.options('*', cors());
-
+// Routes
 app.get("/api", (req, res) => {
   res.json({ message: "Resume Builder API is running!" });
 });
 
-app.use("/api/auth" ,authRouter );
-app.use("/api/resume" , resumeRouter);
-
-// Connect to Database
-connectDB();
+app.use("/api/auth", authRouter);
+app.use("/api/resume", resumeRouter);
 
 // Start the server
 const PORT = process.env.PORT || 5000;
