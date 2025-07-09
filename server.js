@@ -21,7 +21,7 @@ app.use(cookieParser());
 const allowedOrigins = [
   "http://localhost:5173",
   "http://localhost:3000",
-  "https://amarnath-resume-builder.vercel.app/",
+  "https://amarnath-resume-builder.vercel.app",
   process.env.CLIENT_URL
 ];
 
