@@ -22,7 +22,7 @@ const allowedOrigins = [
   "http://localhost:5173",
   "http://localhost:3000",
   "https://resume-builder-frontend-git-main-amarnaths-projects-7f27c4db.vercel.app",
- " https://resume-builder-frontend-seven-neon.vercel.app/",
+ " https://resume-builder-frontend-seven-neon.vercel.app",
   process.env.CLIENT_URL
 ];
 
