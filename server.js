@@ -23,19 +23,23 @@ const allowedOrigins = [
   "http://localhost:3000",
   "https://amarnath-resume-builder.vercel.app",
   process.env.CLIENT_URL
-];
+].filter(Boolean); // Remove any undefined values
 
 app.use(cors({
   origin: function (origin, callback) {
-    if (!origin || allowedOrigins.includes(origin)) {
+    // Allow requests with no origin (like mobile apps or curl requests)
+    if (!origin) return callback(null, true);
+    
+    if (allowedOrigins.includes(origin)) {
       callback(null, true);
     } else {
+      console.log("CORS blocked origin:", origin);
       callback(new Error("Not allowed by CORS: " + origin));
     }
   },
   credentials: true,
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-  allowedHeaders: ["Content-Type", "Authorization" , "Access-Control-Allow-Origin"],
+  allowedHeaders: ["Content-Type", "Authorization"],
   exposedHeaders: ["set-cookie"]
 }));
 
